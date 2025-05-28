@@ -91,7 +91,6 @@ function App() {
                     </ProtectedRoute>
                   } />
 
-                  {/* Common customer routes (accessible by all authenticated users) */}
                   <Route path="/products" element={<ProductsPage />} />
                   <Route path="/my-orders" element={<MyOrdersPage />} />
                 </Routes>
