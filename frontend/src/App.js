@@ -31,6 +31,13 @@ import EmployeeOrderManagement from './pages/employee/OrderManagement';
 // Customer pages
 import ProductsPage from './pages/customer/ProductsPage';
 import MyOrdersPage from './pages/customer/MyOrdersPage';
+import CheckoutPage from './pages/customer/CheckoutPage';
+import AddressManagement from './pages/customer/AddressManagement';
+
+// Shared pages
+import ProductDetailPage from './pages/ProductDetailPage';
+import UserProfile from './pages/UserProfile';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
@@ -49,7 +56,9 @@ function App() {
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
                   <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/profile" element={<UserProfile />} />
                   <Route path="/cart" element={<CartPage />} />
+                  <Route path="/products/:id" element={<ProductDetailPage />} />
                   
                   {/* Admin routes */}
                   <Route path="/admin/*" element={
@@ -87,12 +96,19 @@ function App() {
                     <ProtectedRoute requiredRole="KHÁCH HÀNG">
                       <Routes>
                         <Route path="dashboard" element={<Dashboard />} />
+                        <Route path="addresses" element={<AddressManagement />} />
                       </Routes>
                     </ProtectedRoute>
                   } />
 
+                  {/* Shared customer routes */}
                   <Route path="/products" element={<ProductsPage />} />
                   <Route path="/my-orders" element={<MyOrdersPage />} />
+                  <Route path="/checkout" element={<CheckoutPage />} />
+                  <Route path="/addresses" element={<AddressManagement />} />
+                  
+                  {/* 404 page */}
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
               </MainLayout>
             </ProtectedRoute>
