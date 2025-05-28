@@ -17,12 +17,7 @@ import {
   MenuItem,
   FormHelperText,
   Chip,
-  Autocomplete,
 } from '@mui/material';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { vi } from 'date-fns/locale';
 
 const PromotionForm = ({ 
   open, 
@@ -42,8 +37,8 @@ const PromotionForm = ({
     minOrderAmount: '',
     maxUsageCount: '',
     limitPerCustomer: 1,
-    startDate: new Date(),
-    endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days later
+    startDate: new Date().toISOString().slice(0, 16),
+    endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
     status: true,
     applicableType: 'ALL',
     forNewCustomersOnly: false,
@@ -65,8 +60,8 @@ const PromotionForm = ({
         minOrderAmount: promotion.minOrderAmount || '',
         maxUsageCount: promotion.maxUsageCount || '',
         limitPerCustomer: promotion.limitPerCustomer || 1,
-        startDate: promotion.startDate ? new Date(promotion.startDate) : new Date(),
-        endDate: promotion.endDate ? new Date(promotion.endDate) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        startDate: promotion.startDate ? new Date(promotion.startDate).toISOString().slice(0, 16) : new Date().toISOString().slice(0, 16),
+        endDate: promotion.endDate ? new Date(promotion.endDate).toISOString().slice(0, 16) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
         status: promotion.status !== undefined ? promotion.status : true,
         applicableType: promotion.applicableType || 'ALL',
         forNewCustomersOnly: promotion.forNewCustomersOnly || false,
@@ -84,8 +79,8 @@ const PromotionForm = ({
         minOrderAmount: '',
         maxUsageCount: '',
         limitPerCustomer: 1,
-        startDate: new Date(),
-        endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        startDate: new Date().toISOString().slice(0, 16),
+        endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
         status: true,
         applicableType: 'ALL',
         forNewCustomersOnly: false,
@@ -104,20 +99,6 @@ const PromotionForm = ({
     }));
 
     // Clear error for this field
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: '',
-      }));
-    }
-  };
-
-  const handleDateChange = (name, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }));
-
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -161,7 +142,7 @@ const PromotionForm = ({
       newErrors.discountValue = 'Giá trị giảm giá theo phần trăm không được vượt quá 100';
     }
 
-    if (formData.endDate <= formData.startDate) {
+    if (new Date(formData.endDate) <= new Date(formData.startDate)) {
       newErrors.endDate = 'Ngày kết thúc phải sau ngày bắt đầu';
     }
 
@@ -177,7 +158,12 @@ const PromotionForm = ({
     if (mode === 'view') return;
     
     if (validate()) {
-      onSubmit(formData);
+      const submitData = {
+        ...formData,
+        startDate: new Date(formData.startDate).toISOString(),
+        endDate: new Date(formData.endDate).toISOString(),
+      };
+      onSubmit(submitData);
     }
   };
 
@@ -190,332 +176,341 @@ const PromotionForm = ({
     }
   };
 
+  const formatDateTime = (dateString) => {
+    return new Date(dateString).toLocaleString('vi-VN');
+  };
+
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={vi}>
-      <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
-        <DialogTitle>{getTitle()}</DialogTitle>
-        
-        <DialogContent>
-          <Grid container spacing={3} className="mt-2">
-            {/* Basic Info */}
-            <Grid item xs={12}>
-              <Typography variant="h6" className="font-semibold mb-3">
-                Thông tin cơ bản
-              </Typography>
-            </Grid>
+    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
+      <DialogTitle>{getTitle()}</DialogTitle>
+      
+      <DialogContent>
+        <Grid container spacing={3} className="mt-2">
+          {/* Basic Info */}
+          <Grid item xs={12}>
+            <Typography variant="h6" className="font-semibold mb-3">
+              Thông tin cơ bản
+            </Typography>
+          </Grid>
 
-            <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Tên khuyến mãi *"
+              name="promotionName"
+              value={formData.promotionName}
+              onChange={handleChange}
+              error={!!errors.promotionName}
+              helperText={errors.promotionName}
+              disabled={mode === 'view' || loading}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <Box className="flex space-x-2">
               <TextField
                 fullWidth
-                label="Tên khuyến mãi *"
-                name="promotionName"
-                value={formData.promotionName}
+                label="Mã giảm giá *"
+                name="couponCode"
+                value={formData.couponCode}
                 onChange={handleChange}
-                error={!!errors.promotionName}
-                helperText={errors.promotionName}
+                error={!!errors.couponCode}
+                helperText={errors.couponCode}
                 disabled={mode === 'view' || loading}
               />
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
-              <Box className="flex space-x-2">
-                <TextField
-                  fullWidth
-                  label="Mã giảm giá *"
-                  name="couponCode"
-                  value={formData.couponCode}
-                  onChange={handleChange}
-                  error={!!errors.couponCode}
-                  helperText={errors.couponCode}
-                  disabled={mode === 'view' || loading}
-                />
-                {mode !== 'view' && (
-                  <Button
-                    variant="outlined"
-                    onClick={generateCouponCode}
-                    disabled={loading}
-                    className="whitespace-nowrap"
-                  >
-                    Tạo mã
-                  </Button>
-                )}
-              </Box>
-            </Grid>
-            
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Mô tả"
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                error={!!errors.description}
-                helperText={errors.description}
-                multiline
-                rows={3}
-                disabled={mode === 'view' || loading}
-                placeholder="Nhập mô tả cho khuyến mãi..."
-              />
-            </Grid>
-
-            {/* Discount Settings */}
-            <Grid item xs={12}>
-              <Typography variant="h6" className="font-semibold mb-3">
-                Cài đặt giảm giá
-              </Typography>
-            </Grid>
-
-            <Grid item xs={12} sm={4}>
-              <FormControl fullWidth disabled={mode === 'view' || loading}>
-                <InputLabel>Loại giảm giá *</InputLabel>
-                <Select
-                  name="discountType"
-                  value={formData.discountType}
-                  onChange={handleChange}
-                  label="Loại giảm giá *"
+              {mode !== 'view' && (
+                <Button
+                  variant="outlined"
+                  onClick={generateCouponCode}
+                  disabled={loading}
+                  className="whitespace-nowrap"
                 >
-                  <MenuItem value="PERCENTAGE">Phần trăm (%)</MenuItem>
-                  <MenuItem value="FIXED_AMOUNT">Số tiền cố định (VNĐ)</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
+                  Tạo mã
+                </Button>
+              )}
+            </Box>
+          </Grid>
+          
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Mô tả"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              error={!!errors.description}
+              helperText={errors.description}
+              multiline
+              rows={3}
+              disabled={mode === 'view' || loading}
+              placeholder="Nhập mô tả cho khuyến mãi..."
+            />
+          </Grid>
 
+          {/* Discount Settings */}
+          <Grid item xs={12}>
+            <Typography variant="h6" className="font-semibold mb-3">
+              Cài đặt giảm giá
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <FormControl fullWidth disabled={mode === 'view' || loading}>
+              <InputLabel>Loại giảm giá *</InputLabel>
+              <Select
+                name="discountType"
+                value={formData.discountType}
+                onChange={handleChange}
+                label="Loại giảm giá *"
+              >
+                <MenuItem value="PERCENTAGE">Phần trăm (%)</MenuItem>
+                <MenuItem value="FIXED_AMOUNT">Số tiền cố định (VNĐ)</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              label="Giá trị giảm giá *"
+              name="discountValue"
+              type="number"
+              value={formData.discountValue}
+              onChange={handleChange}
+              error={!!errors.discountValue}
+              helperText={errors.discountValue || (formData.discountType === 'PERCENTAGE' ? 'Nhập % (1-100)' : 'Nhập số tiền (VNĐ)')}
+              disabled={mode === 'view' || loading}
+              inputProps={{ min: 0 }}
+            />
+          </Grid>
+
+          {formData.discountType === 'PERCENTAGE' && (
             <Grid item xs={12} sm={4}>
               <TextField
                 fullWidth
-                label="Giá trị giảm giá *"
-                name="discountValue"
+                label="Giảm tối đa"
+                name="maxDiscountAmount"
                 type="number"
-                value={formData.discountValue}
+                value={formData.maxDiscountAmount}
                 onChange={handleChange}
-                error={!!errors.discountValue}
-                helperText={errors.discountValue || (formData.discountType === 'PERCENTAGE' ? 'Nhập % (1-100)' : 'Nhập số tiền (VNĐ)')}
                 disabled={mode === 'view' || loading}
+                helperText="Số tiền giảm tối đa (VNĐ)"
                 inputProps={{ min: 0 }}
               />
             </Grid>
+          )}
 
-            {formData.discountType === 'PERCENTAGE' && (
-              <Grid item xs={12} sm={4}>
-                <TextField
-                  fullWidth
-                  label="Giảm tối đa"
-                  name="maxDiscountAmount"
-                  type="number"
-                  value={formData.maxDiscountAmount}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Giá trị đơn hàng tối thiểu"
+              name="minOrderAmount"
+              type="number"
+              value={formData.minOrderAmount}
+              onChange={handleChange}
+              disabled={mode === 'view' || loading}
+              helperText="Để trống nếu không giới hạn"
+              inputProps={{ min: 0 }}
+            />
+          </Grid>
+
+          {/* Usage Limits */}
+          <Grid item xs={12}>
+            <Typography variant="h6" className="font-semibold mb-3">
+              Giới hạn sử dụng
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Số lượng sử dụng tối đa"
+              name="maxUsageCount"
+              type="number"
+              value={formData.maxUsageCount}
+              onChange={handleChange}
+              disabled={mode === 'view' || loading}
+              helperText="Để trống nếu không giới hạn"
+              inputProps={{ min: 1 }}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Giới hạn mỗi khách hàng *"
+              name="limitPerCustomer"
+              type="number"
+              value={formData.limitPerCustomer}
+              onChange={handleChange}
+              disabled={mode === 'view' || loading}
+              helperText="Số lần tối đa mỗi khách hàng có thể sử dụng"
+              inputProps={{ min: 1 }}
+            />
+          </Grid>
+
+          {/* Date Range */}
+          <Grid item xs={12}>
+            <Typography variant="h6" className="font-semibold mb-3">
+              Thời gian áp dụng
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Ngày bắt đầu *"
+              name="startDate"
+              type="datetime-local"
+              value={formData.startDate}
+              onChange={handleChange}
+              error={!!errors.startDate}
+              helperText={errors.startDate}
+              disabled={mode === 'view' || loading}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Ngày kết thúc *"
+              name="endDate"
+              type="datetime-local"
+              value={formData.endDate}
+              onChange={handleChange}
+              error={!!errors.endDate}
+              helperText={errors.endDate}
+              disabled={mode === 'view' || loading}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+
+          {/* Additional Settings */}
+          <Grid item xs={12}>
+            <Typography variant="h6" className="font-semibold mb-3">
+              Cài đặt bổ sung
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth disabled={mode === 'view' || loading}>
+              <InputLabel>Phạm vi áp dụng</InputLabel>
+              <Select
+                name="applicableType"
+                value={formData.applicableType}
+                onChange={handleChange}
+                label="Phạm vi áp dụng"
+              >
+                <MenuItem value="ALL">Tất cả sản phẩm</MenuItem>
+                <MenuItem value="CATEGORY">Theo danh mục</MenuItem>
+                <MenuItem value="PRODUCT">Theo sản phẩm cụ thể</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <FormControlLabel
+              control={
+                <Switch
+                  name="forNewCustomersOnly"
+                  checked={formData.forNewCustomersOnly}
                   onChange={handleChange}
                   disabled={mode === 'view' || loading}
-                  helperText="Số tiền giảm tối đa (VNĐ)"
-                  inputProps={{ min: 0 }}
                 />
-              </Grid>
-            )}
+              }
+              label="Chỉ dành cho khách hàng mới"
+            />
+          </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Giá trị đơn hàng tối thiểu"
-                name="minOrderAmount"
-                type="number"
-                value={formData.minOrderAmount}
-                onChange={handleChange}
-                disabled={mode === 'view' || loading}
-                helperText="Để trống nếu không giới hạn"
-                inputProps={{ min: 0 }}
-              />
-            </Grid>
-
-            {/* Usage Limits */}
+          {mode === 'edit' && (
             <Grid item xs={12}>
-              <Typography variant="h6" className="font-semibold mb-3">
-                Giới hạn sử dụng
-              </Typography>
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Số lượng sử dụng tối đa"
-                name="maxUsageCount"
-                type="number"
-                value={formData.maxUsageCount}
-                onChange={handleChange}
-                disabled={mode === 'view' || loading}
-                helperText="Để trống nếu không giới hạn"
-                inputProps={{ min: 1 }}
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Giới hạn mỗi khách hàng *"
-                name="limitPerCustomer"
-                type="number"
-                value={formData.limitPerCustomer}
-                onChange={handleChange}
-                disabled={mode === 'view' || loading}
-                helperText="Số lần tối đa mỗi khách hàng có thể sử dụng"
-                inputProps={{ min: 1 }}
-              />
-            </Grid>
-
-            {/* Date Range */}
-            <Grid item xs={12}>
-              <Typography variant="h6" className="font-semibold mb-3">
-                Thời gian áp dụng
-              </Typography>
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
-              <DateTimePicker
-                label="Ngày bắt đầu *"
-                value={formData.startDate}
-                onChange={(value) => handleDateChange('startDate', value)}
-                disabled={mode === 'view' || loading}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    fullWidth
-                    error={!!errors.startDate}
-                    helperText={errors.startDate}
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
-              <DateTimePicker
-                label="Ngày kết thúc *"
-                value={formData.endDate}
-                onChange={(value) => handleDateChange('endDate', value)}
-                disabled={mode === 'view' || loading}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    fullWidth
-                    error={!!errors.endDate}
-                    helperText={errors.endDate}
-                  />
-                )}
-              />
-            </Grid>
-
-            {/* Additional Settings */}
-            <Grid item xs={12}>
-              <Typography variant="h6" className="font-semibold mb-3">
-                Cài đặt bổ sung
-              </Typography>
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth disabled={mode === 'view' || loading}>
-                <InputLabel>Phạm vi áp dụng</InputLabel>
-                <Select
-                  name="applicableType"
-                  value={formData.applicableType}
-                  onChange={handleChange}
-                  label="Phạm vi áp dụng"
-                >
-                  <MenuItem value="ALL">Tất cả sản phẩm</MenuItem>
-                  <MenuItem value="CATEGORY">Theo danh mục</MenuItem>
-                  <MenuItem value="PRODUCT">Theo sản phẩm cụ thể</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
               <FormControlLabel
                 control={
                   <Switch
-                    name="forNewCustomersOnly"
-                    checked={formData.forNewCustomersOnly}
+                    name="status"
+                    checked={formData.status}
                     onChange={handleChange}
-                    disabled={mode === 'view' || loading}
+                    disabled={loading}
                   />
                 }
-                label="Chỉ dành cho khách hàng mới"
+                label="Trạng thái hoạt động"
               />
             </Grid>
+          )}
 
-            {mode === 'edit' && (
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      name="status"
-                      checked={formData.status}
-                      onChange={handleChange}
-                      disabled={loading}
-                    />
-                  }
-                  label="Trạng thái hoạt động"
-                />
-              </Grid>
-            )}
-
-            {mode === 'view' && (
-              <Grid item xs={12}>
-                <Box className="space-y-2">
+          {mode === 'view' && (
+            <Grid item xs={12}>
+              <Box className="space-y-2">
+                <Typography variant="body2" className="text-gray-600">
+                  <strong>Trạng thái:</strong> {formData.status ? 'Hoạt động' : 'Không hoạt động'}
+                </Typography>
+                {promotion && (
                   <Typography variant="body2" className="text-gray-600">
-                    <strong>Trạng thái:</strong> {formData.status ? 'Hoạt động' : 'Không hoạt động'}
+                    <strong>Đã sử dụng:</strong> {promotion.usedCount || 0} lần
                   </Typography>
-                  {promotion && (
-                    <Typography variant="body2" className="text-gray-600">
-                      <strong>Đã sử dụng:</strong> {promotion.usedCount || 0} lần
-                    </Typography>
-                  )}
-                </Box>
-              </Grid>
-            )}
+                )}
+              </Box>
+            </Grid>
+          )}
 
-            {/* Preview */}
-            {(formData.promotionName || formData.couponCode) && (
-              <Grid item xs={12}>
-                <Box className="p-4 bg-gradient-to-r from-orange-50 to-pink-50 rounded-lg border border-orange-200">
-                  <Typography variant="caption" className="text-gray-600 block mb-2">
-                    Xem trước mã giảm giá:
+          {/* Preview */}
+          {(formData.promotionName || formData.couponCode) && (
+            <Grid item xs={12}>
+              <Box className="p-4 bg-gradient-to-r from-orange-50 to-pink-50 rounded-lg border border-orange-200">
+                <Typography variant="caption" className="text-gray-600 block mb-2">
+                  Xem trước mã giảm giá:
+                </Typography>
+                <Box className="flex items-center space-x-3">
+                  <Chip 
+                    label={formData.couponCode} 
+                    color="primary" 
+                    variant="filled"
+                    className="font-bold"
+                  />
+                  <Typography variant="body1" className="font-medium">
+                    {formData.promotionName}
                   </Typography>
-                  <Box className="flex items-center space-x-3">
-                    <Chip 
-                      label={formData.couponCode} 
-                      color="primary" 
-                      variant="filled"
-                      className="font-bold"
-                    />
-                    <Typography variant="body1" className="font-medium">
-                      {formData.promotionName}
-                    </Typography>
-                    <Typography variant="h6" className="font-bold text-orange-600">
-                      {formData.discountType === 'PERCENTAGE' 
-                        ? `${formData.discountValue}%` 
-                        : `${Number(formData.discountValue).toLocaleString('vi-VN')}đ`
-                      }
+                  <Typography variant="h6" className="font-bold text-orange-600">
+                    {formData.discountType === 'PERCENTAGE' 
+                      ? `${formData.discountValue}%` 
+                      : `${Number(formData.discountValue).toLocaleString('vi-VN')}đ`
+                    }
+                  </Typography>
+                </Box>
+                {mode === 'view' && (
+                  <Box className="mt-2 text-sm text-gray-600">
+                    <Typography variant="caption">
+                      Thời gian: {formatDateTime(formData.startDate)} - {formatDateTime(formData.endDate)}
                     </Typography>
                   </Box>
-                </Box>
-              </Grid>
-            )}
-          </Grid>
-        </DialogContent>
-        
-        <DialogActions>
-          <Button onClick={onClose} disabled={loading}>
-            {mode === 'view' ? 'Đóng' : 'Hủy'}
-          </Button>
-          
-          {mode !== 'view' && (
-            <Button
-              onClick={handleSubmit}
-              variant="contained"
-              disabled={loading}
-            >
-              {mode === 'create' ? 'Tạo khuyến mãi' : 'Cập nhật'}
-            </Button>
+                )}
+              </Box>
+            </Grid>
           )}
-        </DialogActions>
-      </Dialog>
-    </LocalizationProvider>
+        </Grid>
+      </DialogContent>
+      
+      <DialogActions>
+        <Button onClick={onClose} disabled={loading}>
+          {mode === 'view' ? 'Đóng' : 'Hủy'}
+        </Button>
+        
+        {mode !== 'view' && (
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            disabled={loading}
+          >
+            {mode === 'create' ? 'Tạo khuyến mãi' : 'Cập nhật'}
+          </Button>
+        )}
+      </DialogActions>
+    </Dialog>
   );
 };
 

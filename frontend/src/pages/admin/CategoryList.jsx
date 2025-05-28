@@ -12,11 +12,15 @@ import {
   Alert,
   Snackbar,
   Fab,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import { Add, Search, Refresh } from '@mui/icons-material';
 import { Folder } from 'lucide-react';
-import CategoryCard from '../../components/category/CategoryCard';
-import CategoryForm from '../../components/category/CategoryForm';
+import CategoryCard from './CategoryCard';
+import CategoryForm from './CategoryForm';
 import { categoryService } from '../../services/categoryService';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -33,6 +37,7 @@ const CategoryList = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
   
   // Dialog states
   const [formOpen, setFormOpen] = useState(false);
@@ -41,7 +46,7 @@ const CategoryList = () => {
 
   useEffect(() => {
     loadCategories();
-  }, [page, searchTerm]);
+  }, [page, searchTerm, statusFilter]);
 
   const loadCategories = async () => {
     try {
@@ -164,33 +169,52 @@ const CategoryList = () => {
         )}
       </Box>
 
-      {/* Search and Actions */}
+      {/* Search and Filter */}
       <Card className="mb-6">
         <CardContent>
-          <Box className="flex items-center justify-between">
-            <TextField
-              placeholder="Tìm kiếm danh mục..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search className="text-gray-400" />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ width: 300 }}
-            />
+          <Grid container spacing={3} alignItems="center">
+            <Grid item xs={12} md={4}>
+              <TextField
+                fullWidth
+                placeholder="Tìm kiếm danh mục..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search className="text-gray-400" />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
             
-            <Button
-              variant="outlined"
-              startIcon={<Refresh />}
-              onClick={loadCategories}
-              disabled={loading}
-            >
-              Làm mới
-            </Button>
-          </Box>
+            <Grid item xs={12} md={3}>
+              <FormControl fullWidth>
+                <InputLabel>Trạng thái</InputLabel>
+                <Select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  label="Trạng thái"
+                >
+                  <MenuItem value="">Tất cả</MenuItem>
+                  <MenuItem value="true">Hoạt động</MenuItem>
+                  <MenuItem value="false">Không hoạt động</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            
+            <Grid item xs={12} md={5} className="flex justify-end">
+              <Button
+                variant="outlined"
+                startIcon={<Refresh />}
+                onClick={loadCategories}
+                disabled={loading}
+              >
+                Làm mới
+              </Button>
+            </Grid>
+          </Grid>
         </CardContent>
       </Card>
 

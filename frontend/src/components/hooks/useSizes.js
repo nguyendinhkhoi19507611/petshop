@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { sizeService } from '../services/sizeService';
+import { sizeService } from '../../services/sizeService';
 
 export const useSizes = (options = {}) => {
   const {
@@ -52,6 +52,90 @@ export const useSizes = (options = {}) => {
       if (response.data.success) {
         await loadSizes(); // Reload list
         return { success: true, data: response.data.data };
+      } else {
+        return { success: false, error: response.data.message };
+      }
+    } catch (err) {
+      return { 
+        success: false, 
+        error: err.response?.data?.message || 'Lỗi kết nối' 
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateSize = async (id, sizeData) => {
+    try {
+      setLoading(true);
+      const response = await sizeService.update(id, sizeData);
+      
+      if (response.data.success) {
+        await loadSizes(); // Reload list
+        return { success: true, data: response.data.data };
+      } else {
+        return { success: false, error: response.data.message };
+      }
+    } catch (err) {
+      return { 
+        success: false, 
+        error: err.response?.data?.message || 'Lỗi kết nối' 
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteSize = async (id) => {
+    try {
+      setLoading(true);
+      const response = await sizeService.delete(id);
+      
+      if (response.data.success) {
+        await loadSizes(); // Reload list
+        return { success: true };
+      } else {
+        return { success: false, error: response.data.message };
+      }
+    } catch (err) {
+      return { 
+        success: false, 
+        error: err.response?.data?.message || 'Lỗi kết nối' 
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleStatus = async (id) => {
+    try {
+      setLoading(true);
+      const response = await sizeService.toggleStatus(id);
+      
+      if (response.data.success) {
+        await loadSizes(); // Reload list
+        return { success: true, data: response.data.data };
+      } else {
+        return { success: false, error: response.data.message };
+      }
+    } catch (err) {
+      return { 
+        success: false, 
+        error: err.response?.data?.message || 'Lỗi kết nối' 
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateDisplayOrder = async (sizeIds) => {
+    try {
+      setLoading(true);
+      const response = await sizeService.updateDisplayOrder(sizeIds);
+      
+      if (response.data.success) {
+        await loadSizes(); // Reload list
+        return { success: true };
       } else {
         return { success: false, error: response.data.message };
       }

@@ -18,7 +18,7 @@ import {
   Edit, 
   Delete, 
   Visibility, 
-  Package, 
+  Inventory, 
   Link as LinkIcon,
   VisibilityOff 
 } from '@mui/icons-material';
@@ -113,7 +113,7 @@ const BrandCard = ({
           {getStatusChip(brand.status)}
           
           <Box className="flex items-center text-gray-500">
-            <Package className="w-4 h-4 mr-1" />
+            <Inventory className="w-4 h-4 mr-1" />
             <Typography variant="caption">
               {brand.productCount || 0} sản phẩm
             </Typography>

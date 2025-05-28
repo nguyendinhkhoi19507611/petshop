@@ -11,7 +11,7 @@ import {
   MenuItem,
   Box,
 } from '@mui/material';
-import { MoreVert, Edit, Delete, Visibility, Package } from '@mui/icons-material';
+import { MoreVert, Edit, Delete, Visibility, Inventory } from '@mui/icons-material';
 
 const CategoryCard = ({ 
   category, 
@@ -67,7 +67,7 @@ const CategoryCard = ({
           {getStatusChip(category.status)}
           
           <Box className="flex items-center text-gray-500">
-            <Package className="w-4 h-4 mr-1" />
+            <Inventory className="w-4 h-4 mr-1" />
             <Typography variant="caption">
               {category.productCount || 0} sản phẩm
             </Typography>

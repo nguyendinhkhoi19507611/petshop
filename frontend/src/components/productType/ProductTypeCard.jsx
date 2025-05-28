@@ -17,7 +17,7 @@ import {
   Edit, 
   Delete, 
   Visibility, 
-  Package, 
+  Inventory, 
   VisibilityOff,
   Category as CategoryIcon 
 } from '@mui/icons-material';
@@ -92,7 +92,7 @@ const ProductTypeCard = ({
           {getStatusChip(productType.status)}
           
           <Box className="flex items-center text-gray-500">
-            <Package className="w-4 h-4 mr-1" />
+            <Inventory className="w-4 h-4 mr-1" />
             <Typography variant="caption">
               {productType.productCount || 0} sản phẩm
             </Typography>

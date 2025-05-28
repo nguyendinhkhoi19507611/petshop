@@ -17,9 +17,9 @@ import {
   Edit, 
   Delete, 
   Visibility, 
-  Package, 
   VisibilityOff,
-  DragIndicator 
+  DragIndicator,
+  Inventory
 } from '@mui/icons-material';
 import { Ruler } from 'lucide-react';
 
@@ -131,7 +131,7 @@ const SizeCard = ({
           {getStatusChip(size.status)}
           
           <Box className="flex items-center text-gray-500">
-            <Package className="w-4 h-4 mr-1" />
+            <Inventory className="w-4 h-4 mr-1" />
             <Typography variant="caption">
               {size.productCount || 0} sản phẩm
             </Typography>

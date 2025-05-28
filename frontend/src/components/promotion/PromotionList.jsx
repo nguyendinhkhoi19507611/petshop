@@ -20,8 +20,7 @@ import {
   Tabs,
   Tab,
 } from '@mui/material';
-import { Add, Search, Refresh } from '@mui/icons-material';
-import { LocalOffer } from 'lucide-react';
+import { Add, Search, Refresh, LocalOffer } from '@mui/icons-material';
 import PromotionCard from './PromotionCard';
 import PromotionForm from './PromotionForm';
 import { promotionService } from '../../services/promotionService';

@@ -18,7 +18,7 @@ import {
   MenuItem,
 } from '@mui/material';
 import { Add, Search, Refresh } from '@mui/icons-material';
-import { Category as CategoryIcon } from 'lucide-react';
+import { Tags as CategoryIcon } from 'lucide-react';
 import ProductTypeCard from './ProductTypeCard';
 import ProductTypeForm from './ProductTypeForm';
 import { productTypeService } from '../../services/productTypeService';
