@@ -1,3 +1,4 @@
+//frontend/src/App.js
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Box } from '@mui/material';
@@ -8,9 +9,28 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Unauthorized from './pages/Unauthorized';
+import CartPage from './pages/CartPage';
+
+// Admin pages
 import CategoryManagement from './pages/admin/CategoryManagement';
 import BrandManagement from './pages/admin/BrandManagement';
 import SizeManagement from './pages/admin/SizeManagement';
+import ProductTypeManagement from './pages/admin/ProductTypeManagement';
+import ProductManagement from './pages/admin/ProductManagement';
+import OrderManagement from './pages/admin/OrderManagement';
+import PromotionManagement from './pages/admin/PromotionManagement';
+import UserManagement from './pages/admin/UserManagement';
+
+// Employee pages
+import EmployeeCategoryManagement from './pages/employee/CategoryManagement';
+import EmployeeBrandManagement from './pages/employee/BrandManagement';
+import EmployeeSizeManagement from './pages/employee/SizeManagement';
+import EmployeeProductManagement from './pages/employee/ProductManagement';
+import EmployeeOrderManagement from './pages/employee/OrderManagement';
+
+// Customer pages
+import ProductsPage from './pages/customer/ProductsPage';
+import MyOrdersPage from './pages/customer/MyOrdersPage';
 
 function App() {
   return (
@@ -29,6 +49,7 @@ function App() {
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
                   <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/cart" element={<CartPage />} />
                   
                   {/* Admin routes */}
                   <Route path="/admin/*" element={
@@ -38,7 +59,11 @@ function App() {
                         <Route path="categories" element={<CategoryManagement />} />
                         <Route path="brands" element={<BrandManagement />} />
                         <Route path="sizes" element={<SizeManagement />} />
-                        {/* Add more admin routes here */}
+                        <Route path="product-types" element={<ProductTypeManagement />} />
+                        <Route path="products" element={<ProductManagement />} />
+                        <Route path="orders" element={<OrderManagement />} />
+                        <Route path="promotions" element={<PromotionManagement />} />
+                        <Route path="users" element={<UserManagement />} />
                       </Routes>
                     </ProtectedRoute>
                   } />
@@ -48,10 +73,11 @@ function App() {
                     <ProtectedRoute employeeOnly>
                       <Routes>
                         <Route path="dashboard" element={<Dashboard />} />
-                        <Route path="categories" element={<CategoryManagement />} />
-                        <Route path="brands" element={<BrandManagement />} />
-                        <Route path="sizes" element={<SizeManagement />} />
-                        {/* Add more employee routes here */}
+                        <Route path="categories" element={<EmployeeCategoryManagement />} />
+                        <Route path="brands" element={<EmployeeBrandManagement />} />
+                        <Route path="sizes" element={<EmployeeSizeManagement />} />
+                        <Route path="products" element={<EmployeeProductManagement />} />
+                        <Route path="orders" element={<EmployeeOrderManagement />} />
                       </Routes>
                     </ProtectedRoute>
                   } />
@@ -61,10 +87,13 @@ function App() {
                     <ProtectedRoute requiredRole="KHÁCH HÀNG">
                       <Routes>
                         <Route path="dashboard" element={<Dashboard />} />
-                        {/* Add more customer routes here */}
                       </Routes>
                     </ProtectedRoute>
                   } />
+
+                  {/* Common customer routes (accessible by all authenticated users) */}
+                  <Route path="/products" element={<ProductsPage />} />
+                  <Route path="/my-orders" element={<MyOrdersPage />} />
                 </Routes>
               </MainLayout>
             </ProtectedRoute>
